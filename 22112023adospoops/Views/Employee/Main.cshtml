@@ -1,0 +1,131 @@
+﻿@model IEnumerable<DataAccessLayer.Employee>
+
+@{
+    ViewData["Title"] = "Index";
+}
+<div id="message"></div>
+<h1>Index</h1>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#SubmitBtn').click(function () {
+            //alert("clicked");
+            var formdata = new FormData();
+            if ($('#OrderBy').is(':checked')) {
+                formdata.append("orderValue", $('#OrderBy').val());
+            }
+            
+            if ($('#GroupBy').is(':checked')){
+                formdata.append("groupValue", $('#GroupBy').val());
+            }
+
+            formdata.append("collectionType" , $(".Collection:checked").val());
+            //alert($(".Collection:checked").val());
+            //alert($('#OrderBy').val());
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GroupOrder", "Employee")',
+                processData: false,
+                contentType: false,
+                data: formdata,
+                success: function (result) {
+                    //alert(result.status);
+                    if (result.status == "success"){
+                        
+                        window.location.href = result.redirectUrl;
+                    }
+                }
+                
+            });
+
+        });
+    });
+</script>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<div id="container"></div>
+
+
+<label>Select Collection Type : </label>
+<input type="radio" id="List" name="Collection" class="Collection" value="List">
+<label >List</label>
+<input type="radio" id="Array" name="Collection" class="Collection" value="Array">
+<label >Array</label>
+<input type="radio" id="ArrayList" name="Collection" class="Collection" value="ArrayList">
+<label >ArrayList</label>
+
+<br />
+
+<label>Select Condition for display : </label>
+
+
+    <input class="checkBox" type="checkbox" value="Order By" id="OrderBy"><label class="LabelOrder By">Order By</label>
+    <input class="checkBox" type="checkbox" value="Group By" id="GroupBy"><label class="LabelGroup By">Group By</label>
+
+
+    <br />
+    <br />
+
+
+    <input  type="button" id="SubmitBtn" value="RunQuery">
+
+
+<br />
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.EmpId)
+            </th>
+            <th>
+                <a asp-action="Index" asp-controller="Employee" asp-route-sortOrder="@ViewData["NameSortParm"]">
+                @Html.DisplayNameFor(model => model.EmpName)
+
+                        </a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-controller="Employee" asp-route-sortOrder="@ViewData["Salary"]">
+                @Html.DisplayNameFor(model => model.Salary) 
+                    </a>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DeptName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.address)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmpId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmpName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Salary)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeptName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.address)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
